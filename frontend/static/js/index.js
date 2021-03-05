@@ -73,7 +73,7 @@ inputForm.addEventListener('submit', function (event) {
       error_nodes.classList.add("d-block");
       return
     } else {
-      if (graph == 'Hypercubes' && (nodes != '1' || nodes != '2' || nodes != '4' || nodes != '8')) {
+      if (graph == 'Hypercubes' && !(nodes == '1' || nodes == '2' || nodes == '4' || nodes == '8')) {
         error_nodes.innerHTML = "Must be 1, 2 ,4 or 8 nodes.";
         error_nodes.classList.add("d-block");
         return
