@@ -5,16 +5,6 @@ import matplotlib.pyplot as plt
 import random
 import os
 
-# note for mitchell
-# for capturing the order of the images (and the right number), may
-# need to return the order (in search algs) to
-# ensure the right amount of images are collected
-
-# ask jacob
-# hypercube n currently dimension, ask jacob how he is doing in front end, may need to send down the sq rooted version
-# or change the for loops from 2**n to n
-
-# hypercube 4 is still an option 16
 """
 all these added below
 
@@ -32,12 +22,6 @@ all these added below
 2. dfs
 3. dijkstra
 4. cycle det
-
-
-need adding/doing: temporal
-
-!!!!!!!!!!temporal!!!!!!!!!
-
 """
 
 my_path = os.path.abspath(__file__)
