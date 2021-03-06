@@ -4,7 +4,7 @@ var numberOfImg = 0;
 var specific_user = "";
 var full_path = "";
 const inputForm = document.getElementById('userInputForm');
-inputForm.addEventListener('submit', function (event) {
+inputForm.addEventListener("submit", function (event) {
   try {
     // stop default form action (client-side)
     event.preventDefault();
@@ -15,18 +15,17 @@ inputForm.addEventListener('submit', function (event) {
       type = "DG";
     }
 
-    var graph = document.getElementById('graph').value;
+    var graph = document.getElementById("graph").value;
     var nodes = document.getElementById("nodes").value;
-    var algorithms = document.getElementById('algorithms').value;
+    var algorithms = document.getElementById("algorithms").value;
     var source = document.getElementById("source").value;
-    var destination = document.getElementById('destination').value;
-    var error_nodes = document.getElementById('error-nodes');
-    var error_graphs = document.getElementById('error-graphs');
-    var error_source = document.getElementById('error-source');
-    var error_destination = document.getElementById('error-destination');
+    var destination = document.getElementById("destination").value;
+    var error_nodes = document.getElementById("error-nodes");
+    var error_graphs = document.getElementById("error-graphs");
+    var error_source = document.getElementById("error-source");
+    var error_destination = document.getElementById("error-destination");
 
-    if (graph == 'Custom') {
-
+    if (graph == "Custom") {
       var matrix = [];
       for (var m = 0; m < nodes; m++) {
         matrix[m] = [];
@@ -65,44 +64,74 @@ inputForm.addEventListener('submit', function (event) {
       graph = matrix;
     }
     if (isNaN(nodes)) {
-      if (graph == 'Hypercubes') {
+      if (graph == "Hypercubes") {
         error_nodes.innerHTML = "Must be 1, 2 ,4 or 8 nodes.";
       } else {
         error_nodes.innerHTML = "Must be between 1 to 10 nodes";
       }
       error_nodes.classList.add("d-block");
-      return
+      return;
     } else {
-      if (graph == 'Hypercubes' && !(nodes == '1' || nodes == '2' || nodes == '4' || nodes == '8')) {
-        error_nodes.innerHTML = "Must be 1, 2 ,4 or 8 nodes.";
+      if (
+        graph == "Hypercubes" &&
+        !(nodes == "1" || nodes == "2" || nodes == "4" || nodes == "8")
+      ) {
+        error_nodes.innerHTML = "Must be 1, 2 ,4 or 8 nodes";
         error_nodes.classList.add("d-block");
-        return
+        return;
       }
     }
-    if (graph == 'None') {
+    if (graph == "None") {
       error_graphs.classList.add("d-block");
-      return
+      return;
     }
-    if (algorithms == 'SP') {
+    if (algorithms == "SP") {
       if (nodes == 1) {
         error_nodes.innerHTML = "Must be more than 1 for dijkstra's algorithm.";
         error_nodes.classList.add("d-block");
-        return
+        return;
       }
       if (isNaN(source) || source > nodes) {
-        error_source.innerHTML = "Source node must be between 1 and " + nodes + ".";
+        error_source.innerHTML =
+          "Source node must be between 1 and " + nodes + ".";
         error_source.classList.add("d-block");
-        return
+        return;
       }
       if (isNaN(destination) || destination > nodes) {
-        error_destination.innerHTML = "Destination node must be between 1 and " + nodes + ".";
+        error_destination.innerHTML =
+          "Destination node must be between 1 and " + nodes + ".";
         error_destination.classList.add("d-block");
-        return
+        return;
       }
       if (source == destination) {
-        error_destination.innerHTML = "Destination node cannot be the same as Source node.";
+        error_destination.innerHTML =
+          "Destination node cannot be the same as Source node.";
         error_destination.classList.add("d-block");
-        return
+        return;
+      }
+    }
+    if (algorithms == "FJ") {
+      if (nodes == 1) {
+        error_nodes.innerHTML = "Must be more than 1 for Foremost Journey.";
+        error_nodes.classList.add("d-block");
+        return;
+      }
+      if (isNaN(source) || source > nodes) {
+        error_source.innerHTML =
+          "Source node must be between 1 and " + nodes + ".";
+        error_source.classList.add("d-block");
+        return;
+      }
+      if (isNaN(destination)) {
+        error_destination.innerHTML =
+          "Lifetime must be between 2n and 20.";
+        error_destination.classList.add("d-block");
+        return;
+      } else if (2 * parseInt(nodes) > destination || parseInt(destination) > 20) {
+        error_destination.innerHTML =
+          "Lifetime must be between " + String(2 * parseInt(nodes)) + " and 20.";
+        error_destination.classList.add("d-block");
+        return;
       }
     }
     var obj = {
@@ -112,7 +141,6 @@ inputForm.addEventListener('submit', function (event) {
       source: source,
       destination: destination,
       algorithm: algorithms,
-      user: specific_user
     };
     var myJSON = JSON.stringify(obj);
     error_nodes.classList.remove("d-block");
@@ -150,6 +178,52 @@ inputForm.addEventListener('submit', function (event) {
   }
 });
 
+// change other inputs selects depending on graph type toggle
+window.onload = function () {
+  const staticBtn = document.querySelector(
+    "#userInputForm > div:nth-child(1) > div.col-lg-2.col-sm-4.mb-2 > div > div > div > label.btn.btn-secondary.toggle-on"
+  );
+  const dynamicBtn = document.querySelector(
+    "#userInputForm > div:nth-child(1) > div.col-lg-2.col-sm-4.mb-2 > div > div > div > label.btn.btn-primary.toggle-off"
+  );
+  const graphSelect = document.getElementById("graph");
+  const algSelect = document.getElementById("algorithms");
+  staticBtn.addEventListener("click", function () {
+    // Enable buttons if disabled by peterson
+    document.getElementById("up").disabled = false;
+    document.getElementById("down").disabled = false;
+    document.getElementById("nodes").disabled = false;
+    // Modify and disable graph dropdown and description
+    graphSelect[10].style.display = "";
+    graphSelect[10].selected = 'selected';
+    graphSelect.disabled = true;
+    // Modify algorithm dropdown and description
+    algSelect[0].selected = 'selected';
+    algoDesc.innerHTML = algoDescDict["None"];
+    graphDesc.innerHTML = graphDescDict['Temporal'];
+    algSelect[1].style.display = "";
+    for (i = 2; i < algSelect.length; i++) {
+      algSelect[i].style.display = "none";
+    }
+  });
+  dynamicBtn.addEventListener("click", function () {
+    // Modify and enable graph dropdown and description
+    graphSelect[10].style.display = "none";
+    graphSelect[0].selected = 'selected';
+    graphSelect.disabled = false;
+    graphDesc.innerHTML = graphDescDict["None"];
+    // Modify algorithm dropdown and description
+    algSelect[0].selected = 'selected';
+    algSelect[1].style.display = "none";
+    algoDesc.innerHTML = algoDescDict["None"];
+    for (i = 2; i < algSelect.length; i++) {
+      algSelect[i].style.display = "";
+    }
+    document.getElementById("source&dest").style.display = "none";
+    document.getElementById("lifetime").innerHTML = "Destination"
+  });
+};
+
 // button control functions for increasing number of nodes nodes
 function upNodes(max) {
   if ('Hypercubes' == document.getElementById("graph").value) {
@@ -175,7 +249,6 @@ function upNodes(max) {
     }
   }
 }
-
 
 // button control functions for decreasing number of nodes nodes
 function downNodes(min) {
@@ -207,16 +280,17 @@ function downNodes(min) {
 
 
 const graphDescDict = {
-  None: "<h6 class=\"card-subtitle mb-2 text-muted text-center\">Choose an example graph to see description</h6>",
-  Cycle: "<h5 class=\"card-title\">Cycle Graph</h5><p class=\"card-text\">A cycle graph or circular graph is a graph that consists of a single cycle, or in other words, some number of vertices (at least 3, if the graph is simple) connected in a closed chain</p><a href=\"https://www.google.com/search?q=Cycle+Graph\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  Star: "<h5 class=\"card-title\">Star Graph</h5><p class=\"card-text\">Star graph is a special type of graph in which n-1 vertices have degree 1 and a single vertex have degree n – 1.</p><a href=\"https://www.google.com/search?q=Star+Graph\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  Path: "<h5 class=\"card-title\">Path Graph</h5><p class=\"card-text\">The path graph is a tree with two nodes of vertex degree 1, and the other nodes of vertex degree 2.</p><a href=\"https://www.google.com/search?q=Path+Graph\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  Tree: "<h5 class=\"card-title\">Tree Graph</h5><p class=\"card-text\">A tree is an undirected graph in which any two vertices are connected by exactly one path, or equivalently a connected acyclic undirected graph.</p><a href=\"https://www.google.com/search?q=Tree+Graph\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  Complete: "<h5 class=\"card-title\">Complete Graph</h5><p class=\"card-text\">A complete graph is a simple undirected graph in which every pair of distinct vertices is connected by a unique edge</p><a href=\"https://www.google.com/search?q=Complete+Graph\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  Bipartite: "<h5 class=\"card-title\">Bipartite Graph</h5><p class=\"card-text\">A bipartite graph (or bigraph) is a graph whose vertices can be divided into two disjoint and independent sets U and V such that every edge connects a vertex in U to one in V.</p><a href=\"https://www.google.com/search?q=Bipartite+Graph\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  Hypercubes: "<h5 class=\"card-title\">Hypercubes Graph</h5><p class=\"card-text\">The hypercube graph Q<sub>n</sub> is the graph formed from the vertices and edges of an n-dimensional hypercube.</p><a href=\"https://www.google.com/search?q=Hypercube+Graph\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  Petersen: "<h5 class=\"card-title\">Petersen Graph</h5><p class=\"card-text\">The Petersen graph is an undirected graph with 10 vertices and 15 edges. It can be described as pentagon with a connected star inside.</p><a href=\"https://www.google.com/search?q=Petersen+Graph\" class=\"card-link\" target=\"_blank\ rel=\"noreferrer noopener\">Google</a>",
-}
+  None: '<h6 class="card-subtitle mb-2 text-muted text-center">Choose an example graph to see description</h6>',
+  Cycle: '<h5 class="card-title">Cycle Graph</h5><p class="card-text">A cycle graph or circular graph is a graph that consists of a single cycle, or in other words, some number of vertices (at least 3, if the graph is simple) connected in a closed chain</p><a href="https://www.google.com/search?q=Cycle+Graph" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  Star: '<h5 class="card-title">Star Graph</h5><p class="card-text">Star graph is a special type of graph in which n-1 vertices have degree 1 and a single vertex have degree n – 1.</p><a href="https://www.google.com/search?q=Star+Graph" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  Path: '<h5 class="card-title">Path Graph</h5><p class="card-text">The path graph is a tree with two nodes of vertex degree 1, and the other nodes of vertex degree 2.</p><a href="https://www.google.com/search?q=Path+Graph" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  Tree: '<h5 class="card-title">Tree Graph</h5><p class="card-text">A tree is an undirected graph in which any two vertices are connected by exactly one path, or equivalently a connected acyclic undirected graph.</p><a href="https://www.google.com/search?q=Tree+Graph" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  Complete: '<h5 class="card-title">Complete Graph</h5><p class="card-text">A complete graph is a simple undirected graph in which every pair of distinct vertices is connected by a unique edge</p><a href="https://www.google.com/search?q=Complete+Graph" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  Bipartite: '<h5 class="card-title">Bipartite Graph</h5><p class="card-text">A bipartite graph (or bigraph) is a graph whose vertices can be divided into two disjoint and independent sets U and V such that every edge connects a vertex in U to one in V.</p><a href="https://www.google.com/search?q=Bipartite+Graph" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  Hypercubes: '<h5 class="card-title">Hypercubes Graph</h5><p class="card-text">The hypercube graph Q<sub>n</sub> is the graph formed from the vertices and edges of an n-dimensional hypercube.</p><a href="https://www.google.com/search?q=Hypercube+Graph" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  Petersen: '<h5 class="card-title">Petersen Graph</h5><p class="card-text">The Petersen graph is an undirected graph with 10 vertices and 15 edges. It can be described as pentagon with a connected star inside.</p><a href="https://www.google.com/search?q=Petersen+Graph" class="card-link" target="_blank rel="noreferrer noopener">Google</a>',
+  Temporal: '<h5 class="card-title">Temporal Graph</h5><p class="card-text">A temporal graph is a graph that changes with time. When time is discrete and only the relationships between the participating entities may change and not the entities themselves, a temporal graph may be viewed as a sequence G<sub>1</sub>, G<sub>2</sub> . . . , G<sub>l</sub> of static graphs over the same (static) set of nodes V. The set V of vertices of the graph is fixed, but the set E of edges can change.</p><a href="https://www.google.com/search?q=Temporal+Graph" class="card-link" target="_blank rel="noreferrer noopener">Google</a>'
+};
 
 
 // function for changing graphs
@@ -258,43 +332,48 @@ function changeGraph() {
 }
 
 const algoDescDict = {
-  None: "<h6 class=\"card-subtitle mb-2 text-muted text-center\">Select an example algorithm to see description</h6>",
-  BFS: "<h5 class=\"card-title\">Breadth-first search</h5><p class=\"card-text\">Breadth-first search is a graph traversal algorithm that starts traversing the graph from root node and explores all the neighbouring nodes. Then, it selects the nearest node and explores all the unexplored nodes. The algorithm follows the same process for each of the nearest nodes until it finds the goal.</p><a href=\"https://www.google.com/search?q=Breath+First+Search\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  DFS: "<h5 class=\"card-title\">Depth-first search</h5><p class=\"card-text\">Depth-first search is a graph traversal algorithm that starts traversing the graph from the root node and explores as far as possible along each branch before backtracking. So the basic idea is to start from the root or any arbitrary node and mark the node and move to the adjacent unmarked node and continue this loop until there is no unmarked adjacent node. Then backtrack and check for other unmarked nodes and traverse them.</p><a href=\"https://www.google.com/search?q=Depth+First+Search\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  SP: "<h5 class=\"card-title\">Dijkstra's algorithm</h5><p class=\"card-text\">Dijkstra's algorithm solves the problem of finding the shortest path from a point in a graph (the source) to a destination. The graph representing all the paths from one vertex to all the others must be a spanning tree - it must include all vertices. There will also be no cycles as a cycle would define more than one path from the selected vertex to at least one other vertex. The steps for implementing Dijkstra’s algorithm are as follows: <ol><li>Mark your selected initial node with a current distance of 0 and the rest with infinity.</li><li> Set the non-visited node with the smallest current distance as the current node C.</li><li> For each neighbour N of your current node C: add the current distance of C with the weight of the edge connecting C-N.</li><li> If it's smaller than the current distance of N, set it as the new current distance of N. Mark the current node C as visited.</li><li>If there are non-visited nodes, go to step 2.</li></ol><a href=\"https://www.google.com/search?q=Dijkstra+algorithm\" class=\"card-link\" target=\"_blank\" rel=\"noreferrer noopener\">Google</a>",
-  CD: "<h5 class=\"card-title\">Cycle Detection</h5><p class=\"card-text\">Run a DFS from every unvisited node. Depth First Traversal can be used to detect a cycle in a Graph. DFS for a connected graph produces a tree. There is a cycle in a graph only if there is a back edge present in the graph. A back edge is an edge that is joining a node to itself (self-loop) or one of its ancestor in the tree produced by DFS. To find the back edge to any of its ancestor keep a visited array and if there is a back edge to any visited node then there is a loop and return true.</h6>"
-}
+  None: '<h6 class="card-subtitle mb-2 text-muted text-center">Select an example algorithm to see description</h6>',
+  BFS: '<h5 class="card-title">Breadth-first search</h5><p class="card-text">Breadth-first search is a graph traversal algorithm that starts traversing the graph from root node and explores all the neighbouring nodes. Then, it selects the nearest node and explores all the unexplored nodes. The algorithm follows the same process for each of the nearest nodes until it finds the goal.</p><a href="https://www.google.com/search?q=Breath+First+Search" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  DFS: '<h5 class="card-title">Depth-first search</h5><p class="card-text">Depth-first search is a graph traversal algorithm that starts traversing the graph from the root node and explores as far as possible along each branch before backtracking. So the basic idea is to start from the root or any arbitrary node and mark the node and move to the adjacent unmarked node and continue this loop until there is no unmarked adjacent node. Then backtrack and check for other unmarked nodes and traverse them.</p><a href="https://www.google.com/search?q=Depth+First+Search" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  SP: '<h5 class="card-title">Dijkstra\'s algorithm</h5><p class="card-text">Dijkstra\'s algorithm solves the problem of finding the shortest path from a point in a graph (the source) to a destination. The graph representing all the paths from one vertex to all the others must be a spanning tree - it must include all vertices. There will also be no cycles as a cycle would define more than one path from the selected vertex to at least one other vertex. The steps for implementing Dijkstra’s algorithm are as follows: <ol><li>Mark your selected initial node with a current distance of 0 and the rest with infinity.</li><li> Set the non-visited node with the smallest current distance as the current node C.</li><li> For each neighbour N of your current node C: add the current distance of C with the weight of the edge connecting C-N.</li><li> If it\'s smaller than the current distance of N, set it as the new current distance of N. Mark the current node C as visited.</li><li>If there are non-visited nodes, go to step 2.</li></ol></p><a href="https://www.google.com/search?q=Dijkstra+algorithm" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  CD: '<h5 class="card-title">Cycle Detection</h5><p class="card-text">Run a DFS from every unvisited node. Depth First Traversal can be used to detect a cycle in a Graph. DFS for a connected graph produces a tree. There is a cycle in a graph only if there is a back edge present in the graph. A back edge is an edge that is joining a node to itself (self-loop) or one of its ancestor in the tree produced by DFS. To find the back edge to any of its ancestor keep a visited array and if there is a back edge to any visited node then there is a loop and return true.</p><a href="https://www.google.com/search?q=Cycle+Detection" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
+  FJ: '<h5 class="card-title">Foremost Journey</h5>Foremost journey is a (u,v)-journey j in a temporal graph if its arrival time is the minimum arrival time of all (u,v)-journeys’ arrival times, under the labels assigned to the underlying graph’s edges. We consider an undirected graph of n vertices, where each edge has an associated set of discrete availability instances (labels). A journey from vertex u to vertex v is a path from u to v where successive path edges have strictly increasing labels. We have used a simple polynomial-time algorithm which, given a temporal graph G(L) = (V, E, L) and a source vertex s ∈ V , computes a foremost (s,v)-journey, for every v ̸= s, if such a journey exists. The algorithm considers each existing label in the sequence of time labels, from the smallest to the largest one. For each label considered, it computes the foremost journeys from s which arrive at that time. Each time edge is examined exactly once.</p><a href="https://www.google.com/search?q=Foremost+Journey" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>'
+};
 
 const algoBlankDict = {
-  None: "<h6 class=\"card-subtitle mb-2 text-muted text-center\">Select an example algorithm to see code</h6>",
+  None: '<h6 class="card-subtitle mb-2 text-muted text-center">Select an example algorithm to see code</h6>',
   BFS: "<i>G</i> = graph<br><i>root</i> = starting node<br>BFS(<i>G</i>, <i>root</i>)<br><br>let <i>Q</i> be a queue<br>label <i>root</i> as discovered<br><input><br><br><b>while</b> <i>Q</i>  is not empty <b>do</b><ol><i>v</i> = <i>Q</i>.dequeue()<br><b>if</b> <input> <b>then</b><ol><b>return</b> <i>v</i></ol><b>for all</b> edges from <i>v</i> to <i>w</i> <b>in</b> <i>G</i>.adjacent(<i>v</i>) <b>do</b><ol><b>if</b> <i>w</i> is not labeled as discovered <b>then</b><ol>label <i>w</i> as discovered<br><input></ol></ol></ol><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>See Answers</button>",
   DFS: "<i>G</i> = graph<br><i>v</i> = starting node<br>DFS(<i>G</i>, <i>v</i>)<br><br>label <i>v</i> as discovered<br><br><b>for all</b> <i>v</i> to <i>w</i> <b>in</b> <i>G</i>.adjacent(<i>v</i>) <b>do</b><ol><b>if</b> vertex <i>w</i> is not labeled as discovered <b>then</b><ol><input></ol></ol><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>See Answers</button>",
   SP: "<i>G</i> = graph<br><i>start</i> = starting node<br>Dijkstra(<i>G</i>, <i>start</i>)<br><br>let <i>Q</i> be a set of nodes<br><br><b>for each</b> vertex <i>v</i> in <i>G</i> <b>do</b><ol>distance[<i>v</i>] = infinity<br>prev[<i>v</i>] = undefined<br>add <i>v</i> to <i>Q</i></ol><input><br><br><b>while</b> <input> <b>do</b><ol><i>u</i> = vertex in <i>Q</i> with minimum distance[<i>u</i>]<br>remove <i>u</i> from <i>Q</i><br><b>for each</b> neighbour <i>v</i> of <i>u</i> <b>do</b><ol><i>compare</i> = <input><br><b>if</b> <i>compare</i> < distance[<i>v</i>] <b>do</b><ol>distance[<i>v</i>] = <i>compare</i><br>prev[<i>v</i>] = <i>u</i></ol></ol></ol><b>return</b> distance[], prev[]<br><br><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>See Answers</button>",
-  CD: "<i>G</i> = graph<br><i>v</i> = any vertex in <i>G</i><br><br><b>if</b> <input> finds edge that points to <input> <b>then</b><ol><b>return</b> true</ol><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>See Answers</button>"
-}
+  CD: "<i>G</i> = graph<br><i>v</i> = any vertex in <i>G</i><br><br><b>if</b> <input> finds edge that points to <input> <b>then</b><ol><b>return</b> true</ol><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>See Answers</button>",
+};
 
 const algoAnsDict = {
-  None: "<h6 class=\"card-subtitle mb-2 text-muted text-center\">Select an example algorithm to see code</h6>",
+  None: '<h6 class="card-subtitle mb-2 text-muted text-center">Select an example algorithm to see code</h6>',
   BFS: "<i>G</i> = graph<br><i>root</i> = starting node<br>BFS(<i>G</i>, <i>root</i>)<br><br>let <i>Q</i> be a queue<br>label <i>root</i> as discovered<br><i>Q</i>.enqueue(<i>root</i>)<br><br><b>while</b> <i>Q</i>  is not empty <b>do</b><ol><i>v</i> = <i>Q</i>.dequeue()<br><b>if</b> <i>v</i> is the goal <b>then</b><ol><b>return</b> <i>v</i></ol><b>for all</b> edges from <i>v</i> to <i>w</i> <b>in</b> <i>G</i>.adjacent(<i>v</i>) <b>do</b><ol><b>if</b> <i>w</i> is not labeled as discovered <b>then</b><ol>label <i>w</i> as discovered<br><i>Q</i>.enqueue(<i>w</i>)</ol></ol></ol><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>Hide Answers</button>",
   DFS: "<i>G</i> = graph<br><i>v</i> = starting node<br>DFS(<i>G</i>, <i>v</i>)<br><br>label <i>v</i> as discovered<br><br><b>for all</b> <i>v</i> to <i>w</i> <b>in</b> <i>G</i>.adjacent(<i>v</i>) <b>do</b><ol><b>if</b> vertex <i>w</i> is not labeled as discovered <b>then</b><ol>recursively call DFS(<i>G</i>, <i>w</i>)</ol></ol><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>Hide Answers</button>",
   SP: "<i>G</i> = graph<br><i>start</i> = starting node<br>Dijkstra(<i>G</i>, <i>start</i>)<br><br>let <i>Q</i> be a set of nodes<br><br><b>for each</b> vertex <i>v</i> in <i>G</i> <b>do</b><ol>distance[<i>v</i>] = infinity<br>prev[<i>v</i>] = undefined<br>add <i>v</i> to <i>Q</i></ol>distance[<i>start</i>] = 0<br><br><b>while</b> <i>Q</i> is not empty <b>do</b><ol><i>u</i> = vertex in <i>Q</i> with minimum distance[<i>u</i>]<br>remove <i>u</i> from <i>Q</i><br><b>for each</b> neighbour <i>v</i> of <i>u</i> <b>do</b><ol><i>compare</i> = distance[<i>u</i>] + length(<i>u</i>, <i>v</i>)<br><b>if</b> <i>compare</i> < distance[<i>v</i>] <b>do</b><ol>distance[<i>v</i>] = <i>compare</i><br>prev[<i>v</i>] = <i>u</i></ol></ol></ol><b>return</b> distance[], prev[]<br><br><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>Hide Answers</button>",
-  CD: "<i>G</i> = graph<br><i>v</i> = any vertex in <i>G</i><br><br><b>if</b> DFS(<i>G</i>, <i>v</i>) finds edge that points to ancestor of current vertex <b>then</b><ol><b>return</b> true</ol><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>Hide Answers</button>"
-}
+  CD: "<i>G</i> = graph<br><i>v</i> = any vertex in <i>G</i><br><br><b>if</b> DFS(<i>G</i>, <i>v</i>) finds edge that points to ancestor of current vertex <b>then</b><ol><b>return</b> true</ol><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>Hide Answers</button>",
+};
 
 // Function for changing algorithms
 function changeAlgo() {
-  var algorithms = document.getElementById('algorithms').value;
-  var algoDesc = document.getElementById('algoDesc');
+  var algorithms = document.getElementById("algorithms").value;
+  var algoDesc = document.getElementById("algoDesc");
   if (document.getElementById("codeBtn").innerHTML == "Code") {
     algoDesc.innerHTML = algoDescDict[algorithms];
   } else {
     algoDesc.innerHTML = algoBlankDict[algorithms];
   }
-  var source = document.getElementById('Dijkstra');
+  var sourcedest = document.getElementById("source&dest");
   if (algorithms == "SP") {
-    source.style.display = '';
+    sourcedest.style.display = "";
+  } else if (algorithms == "FJ") {
+    sourcedest.style.display = "";
+    document.getElementById("lifetime").innerHTML = "Lifetime"
   } else {
-    source.style.display = "none";
+    sourcedest.style.display = "none";
+    document.getElementById("lifetime").innerHTML = "Destination"
   }
 }
 

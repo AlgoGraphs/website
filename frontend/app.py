@@ -5,7 +5,9 @@ from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
 from backend import fullBack
 from werkzeug import SharedDataMiddleware
+from natsort import natsorted
 import gunicorn
+import natsort
 import psycopg2
 import uuid
 import os
@@ -93,7 +95,7 @@ def checkInputDetails(ID):
         cursor = connection.cursor()
         postgreSQL_select_Query = " SELECT EXISTS(SELECT 1 FROM images WHERE id = %s); "
 
-        cursor.execute(postgreSQL_select_Query, (ID,))
+        cursor.execute(postgreSQL_select_Query, (str(ID),))
         value = cursor.fetchall()
 
     except (Exception, psycopg2.Error) as error:
@@ -116,7 +118,7 @@ def read_blob(data_id, path_to_dir):
                     (data_id,))
 
         blob = cur.fetchone()
-        open(path_to_dir + str(blob[0]) + '.' + str(blob[1]), 'wb').write(blob[2])
+        open(path_to_dir + str(blob[0]) + '.' + str(blob[1]), 'w+b').write(blob[2])
         # close the communication with the PostgresQL database
         # cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -223,7 +225,14 @@ def test():
 
         images_path = os.listdir(new_folder_path)
         for filename_old in images_path:
-            os.remove(new_folder_path + '/' + filename_old)
+            if fnmatch.fnmatch(filename_old, '*bfs.png'):
+                os.remove(new_folder_path + '/' + filename_old)
+            elif fnmatch.fnmatch(filename_old, '*dfs.png'):
+                os.remove(new_folder_path + '/' + filename_old)
+            elif fnmatch.fnmatch(filename_old, '*dijkstra.png'):
+                os.remove(new_folder_path + '/' + filename_old)
+            elif fnmatch.fnmatch(filename_old, '*cycledetection.png'):
+                os.remove(new_folder_path + '/' + filename_old)
 
         custom_string = req["type"] + str(nodes_be) + str(graph_be) + str(source_be) + str(
             destination_be) + algorithm_be
@@ -231,7 +240,7 @@ def test():
         exist_image = checkInputDetails(custom_string + "1")
 
         if exist_image != [(False,)]:
-            itera = 1
+            itera = 0
             while True:
                 image_file_name = custom_string + str(itera)
                 details = getDetails(image_file_name)
@@ -243,11 +252,11 @@ def test():
 
         else:
 
-            if algorithm_be == 'None':
-                fullBack.select_graph(graph_be, nodes_be, new_folder_path)
+            if algorithm_be == 'None' and algorithm_be == 'Temporal':
+                fullBack.select_graph(graph_be, nodes_be, new_folder_path, source_be, destination_be)
             else:
                 n: int
-                l, m, n = fullBack.select_graph(graph_be, nodes_be, new_folder_path)
+                l, m, n = fullBack.select_graph(graph_be, nodes_be, new_folder_path, source_be, destination_be)
                 fullBack.select_alg(algorithm_be, l, m, n, new_folder_path, source_be, destination_be)
 
         if len(os.listdir(new_folder_path)) == 0:
@@ -281,12 +290,13 @@ def test():
                             source=req["source"], destination=req["destination"], algorithm=req["algorithm"])
                 db.session.add(data)
                 db.session.commit()
-            new_image_path = sorted(os.listdir(new_folder_path))
+            new_image_path = natsorted(os.listdir(new_folder_path))
             print(new_folder_path)
             print(new_image_path)
             n = 0
             for i in new_image_path:
-                if type(graph_be) != list and checkInputDetails(custom_string + str(n)) == [(False,)]:
+                print(checkInputDetails(i))
+                if type(graph_be) != list and checkInputDetails(i) == [(False,)]:
                     write_blob(custom_string + str(n), new_folder_path + '/' + i)
                     n += 1
 

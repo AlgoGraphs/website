@@ -1,10 +1,23 @@
+from itertools import combinations
+
 import matplotlib
 import networkx as nx
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import random
 import os
 
+# note for mitchell
+# for capturing the order of the images (and the right number), may
+# need to return the order (in search algs) to
+# ensure the right amount of images are collected
+
+# ask jacob
+# hypercube n currently dimension, ask jacob how he is doing in front end, may need to send down the sq rooted version
+# or change the for loops from 2**n to n
+
+# hypercube 4 is still an option 16
 """
 all these added below
 
@@ -22,6 +35,12 @@ all these added below
 2. dfs
 3. dijkstra
 4. cycle det
+
+
+need adding/doing: temporal
+
+!!!!!!!!!!temporal!!!!!!!!!
+
 """
 
 my_path = os.path.abspath(__file__)
@@ -29,28 +48,34 @@ my_path = os.path.abspath(__file__)
 
 def cycle(numNodes, exact_path):
     plt.clf()
-    G = nx.Graph()
-    if numNodes == 1:
-        G.add_node(0)
 
-    elif numNodes > 1:
-        G.add_node(0)
-        for i in range(0, numNodes - 1):
-            G.add_node(i)
-            G.add_edge(i, i + 1)
-    G.add_edge(0, numNodes - 1)
-    G.add_nodes_from(G.nodes(), colour='never coloured')
+    G = nx.cycle_graph(numNodes)
+
+    # gathers all the nodes and edges created and draws them on a networkx canvas
+    # with the labels starting from 1 to numNodes and all the nodes coloured
+    # white
+    # G.add_nodes_from(G.nodes(), colour='never coloured')
     positions = nx.spring_layout(G)
     nx.draw(G, pos=positions, node_color='white')
     nx.draw_networkx_labels(G, pos=positions, labels={n: n + 1 for n in G})
+
+    # matplotlib function that saves the graph creates as a png
     if not os.path.exists('static/graph_images'):
         os.makedirs('static/graph_images')
     plt.savefig(os.path.join(exact_path, (str(numNodes) + "cycle")), dpi=300)
+
+    # convert graph created into a list of lists, where each index represents
+    # the node, and the list at that index contains the nodes it is connected to
+    # by an edge
     adjlist = []
     x = nx.convert.to_dict_of_lists(G)
     for i in x.values():
         adjlist.append(i)
 
+    # adjlist is returned in the case of the user wanting to see a search alg
+    # implemented on the graph, the same graph can easily be used, the graph
+    # itself is returned as well as thet positions of the nodes to aid with
+    # consistency
     return adjlist, G, positions
 
 
@@ -194,77 +219,40 @@ def bipartite(numNodes, exact_path):
 
 def hypercube(n, exact_path):
     plt.clf()
-    if n == 0:
+    if n == 1:
         x = nx.Graph()
         x.add_node(0)
+
+    elif n == 8:
+        x = nx.Graph()
+        for i in range(0, n):
+            x.add_node(i)
+        x.add_edge(0, 1)
+        x.add_edge(0, 2)
+        x.add_edge(0, 3)
+        x.add_edge(1, 4)
+        x.add_edge(1, 5)
+        x.add_edge(2, 4)
+        x.add_edge(2, 6)
+        x.add_edge(3, 5)
+        x.add_edge(3, 6)
+        x.add_edge(4, 7)
+        x.add_edge(5, 7)
+        x.add_edge(6, 7)
+
     elif n == 4:
         x = nx.Graph()
-        for i in range(0, 2 ** n):
-            x.add_node(i)
-        x.add_edge(0, 1)
-        x.add_edge(0, 2)
-        x.add_edge(0, 3)
-        x.add_edge(1, 4)
-        x.add_edge(1, 5)
-        x.add_edge(2, 4)
-        x.add_edge(2, 6)
-        x.add_edge(3, 5)
-        x.add_edge(3, 6)
-        x.add_edge(4, 7)
-        x.add_edge(5, 7)
-        x.add_edge(6, 7)
-
-        x.add_edge(8, 9)
-        x.add_edge(8, 10)
-        x.add_edge(8, 11)
-        x.add_edge(9, 12)
-        x.add_edge(9, 13)
-        x.add_edge(10, 12)
-        x.add_edge(10, 14)
-        x.add_edge(11, 13)
-        x.add_edge(11, 14)
-        x.add_edge(12, 15)
-        x.add_edge(13, 15)
-        x.add_edge(14, 15)
-
-        x.add_edge(0, 8)
-        x.add_edge(1, 9)
-        x.add_edge(2, 10)
-        x.add_edge(3, 11)
-        x.add_edge(4, 12)
-        x.add_edge(5, 13)
-        x.add_edge(6, 14)
-        x.add_edge(7, 15)
-
-    elif n == 3:
-        x = nx.Graph()
-        for i in range(0, 2 ** n):
-            x.add_node(i)
-        x.add_edge(0, 1)
-        x.add_edge(0, 2)
-        x.add_edge(0, 3)
-        x.add_edge(1, 4)
-        x.add_edge(1, 5)
-        x.add_edge(2, 4)
-        x.add_edge(2, 6)
-        x.add_edge(3, 5)
-        x.add_edge(3, 6)
-        x.add_edge(4, 7)
-        x.add_edge(5, 7)
-        x.add_edge(6, 7)
-
-    elif n == 2:
-        x = nx.Graph()
-        for i in range(0, 2 ** n):
+        for i in range(0, n):
             x.add_node(i)
         x.add_edge(0, 1)
         x.add_edge(1, 2)
         x.add_edge(2, 3)
         x.add_edge(0, 3)
 
-    elif n == 1:
+    elif n == 2:
         x = nx.Graph()
-        for i in range(0, 2 ** n):
+        for i in range(0, n):
+            print(i)
             x.add_node(i)
         x.add_edge(0, 1)
 
@@ -296,7 +284,6 @@ def petersen(exact_path):
     return adjlist, Graph, positions
 
 
-# custom([[0,0,1],[0,0,1],[1,1,0]])
 def custom(adj, exact_path):
     plt.clf()
     G = nx.Graph()
@@ -539,7 +526,193 @@ def dijkstra(adjlist, graph, positions, source, target, direc):
         plt.savefig(os.path.join(direc, (str(order) + "dijkstra.png")), dpi=300)
 
 
-def select_graph(graphtype, nodes, new_path):
+def temporal(num, max_life, src, direc):
+    src = src - 1
+    ##    if num <1 or num>10:
+    ##        print("please ennter number of nodes between 1 and 10")
+    ##        exit()
+
+    vertices = []
+    for i in range(num):
+        vertices.append(i)
+    print("vertices", vertices)
+
+    check = src - 1
+
+    ##    if check not in vertices:
+    ##        print("please ennter a source vertex between 1 and your max no. of nodes")
+    ##        exit()
+    ##
+    ##    if max_life < (2*num):
+    ##        print("please enter max_life which is atleast twice the number of nodes")
+    ##        exit()
+    ##
+    ##    if max_life > 20:
+    ##        print("please enter max_life which is atleast twice the number of nodes and not more than 2")
+    ##        exit()
+
+    edges_not_used = list(combinations((vertices), 2))  # getting all possible combinations of length 2
+    print("combinations possible", edges_not_used)
+    plt.clf()  # used to clear the current figure
+    G = nx.Graph()
+    order = 0
+
+    for i in range(0, num):
+        G.add_node(i)
+
+    G.add_nodes_from(G.nodes(), colour='never coloured')
+    positions = nx.spring_layout(G, scale=0.2)
+    nx.draw(G, pos=positions, node_color='white')
+    nx.draw_networkx_labels(G, pos=positions, labels={n: n + 1 for n in G})
+    plt.savefig(os.path.join(direc, (str(order) + "temporal.png")), dpi=300)
+    order += 1
+
+    main = []
+
+    for j in range(0, max_life, src + 1):
+        lst1 = []
+        G.remove_edges_from(list(G.edges()))
+        for k in range(0, num):
+            for q in range(0, num):
+                probability = random.uniform(0, 1)
+                if (k != q):  # edges created with random probability
+                    if (probability < (1 / (num))):  # create random edges at diff times
+
+                        if ((k, q) in edges_not_used) or ((q, k) in edges_not_used):
+                            if j == 0:
+                                k = src
+                            vertices_traversed = (k, q)
+                            lst1.append(vertices_traversed)
+                            G.add_edge(k, q)
+                            if (k, q) in edges_not_used:
+                                edges_not_used.remove((k, q))
+                            if (q, k) in edges_not_used:
+                                edges_not_used.remove((q, k))
+
+        plt.clf()
+        main.append(lst1)
+        nx.draw(G, pos=positions, node_color='pink')
+        nx.draw_networkx_labels(G, pos=positions, labels={n: n + 1 for n in G})
+        plt.savefig(os.path.join(direc, (str(order) + "temporal.png")), dpi=300)
+        order += 1
+
+    # If dest and source vertex found, we apply algorithm to find shortest path
+
+    S = []  # creating a list called 'S' of (u,v) and (v,u) edges since our graph is undirectes
+    for i in range(len(main)):
+        new = []
+        for each in main[i]:
+            a = each[0]
+            b = each[1]
+            one = (a, b)
+            swap = (b, a)
+            new.append(one)
+            new.append(swap)
+        S.append(new)
+
+    print("S", S)
+    null = '-'
+
+    vertices_traversed = [src]
+    parents = {}
+    arrival_time = {}
+    parents[src] = null
+    arrival_time[src] = 0
+
+    # Part of the algorithm
+    # finding time at which edges appear and adding it to the dict arrival_time
+    # setting parents of all vertices to null
+
+    for i in range(len(S)):
+        for each in S[i]:
+            if each[0] not in vertices_traversed:
+                vertices_traversed.append(each[0])
+                arrival_time[each[0]] = i + 1
+                parents[each[0]] = null
+            if each[1] not in vertices_traversed:
+                vertices_traversed.append(each[1])
+                arrival_time[each[1]] = i + 1
+                parents[each[1]] = null
+
+    print("arrival_time", arrival_time)
+    print("parents", parents)
+
+    # dst here is the vertex that appears latest
+    dst = vertices_traversed[-1]
+
+    R = [src]
+
+    print("R", R)
+    print("dst", dst)
+
+    for l in range(len(S)):
+        for each in S[l]:
+            a = each[0]
+            b = each[1]
+            if (a in R and b not in R):  # main algorithm of foremost jounrey
+                if arrival_time[a] < l + 1:
+                    parents[b] = a
+                    arrival_time[b] = l + 1
+                    R.append(b)
+            elif (b in R and a not in R):  # i have also taking reverse since our graph is undirected
+                if arrival_time[b] < l + 1:
+                    parents[a] = b
+                    arrival_time[a] = l + 1
+                    R.append(a)
+
+    print("arrival_time", arrival_time)
+    print("parents", parents)
+    print("R222", R)
+
+    traverse = []  # to add all edges in the order they will be traversed
+    for i in range(max_life):
+        for each in arrival_time:
+            if (arrival_time[each] == i):
+                lst2 = (parents[each], each)
+                traverse.append(lst2)
+
+    del traverse[0]
+    print("traverse", traverse)
+
+    final = 0  # to calculage total time taken
+    if len(R) != len(vertices):
+        print("Path not found, you can try again by increasing max_life")
+        exit()
+
+    for i in vertices:
+        final += arrival_time[i]
+    print("final", final)
+
+    G.remove_edges_from(list(G.edges()))  # to label edges with time at which they appear
+    for each in traverse:
+        G.add_edge(each[0], each[1])
+        G[each[0]][each[1]]['time'] = arrival_time[each[1]]
+
+    labels = {}  # to label nodes, source node also labelled
+    for n in G.nodes:
+
+        print(n)
+        if n == src:
+            labels[n] = str(n + 1) + '$: SOURCE$'
+
+        else:
+            labels[n] = n + 1
+
+    plt.clf()  # Plotting edges from the list traversed
+    main.append(lst1)
+    nx.draw(G, pos=positions, node_color='pink')
+    nx.draw_networkx_labels(G, pos=positions, labels=labels)
+
+    b = dict(((u, v), d) for u, v, d in G.edges(data=True))
+    print(b)
+    nx.draw_networkx_edge_labels(G, pos=positions, edge_labels=b, font_color='red')
+
+    plt.savefig(os.path.join(direc, (str(order) + "temporal.png")), dpi=300)
+
+    return G.edges
+
+
+def select_graph(graphtype, nodes, new_path, s, d):
     if graphtype == "Cycle":
         l, m, n = cycle(nodes, new_path)
     elif graphtype == "Star":
@@ -549,13 +722,16 @@ def select_graph(graphtype, nodes, new_path):
     elif graphtype == "Tree":
         l, m, n = tree(nodes, new_path)
     elif graphtype == "Complete":
-        l, m, n = complete(nodes ,new_path)
+        l, m, n = complete(nodes, new_path)
     elif graphtype == "Bipartite":
         l, m, n = bipartite(nodes, new_path)
     elif graphtype == "Hypercubes":
         l, m, n = hypercube(nodes, new_path)
     elif graphtype == "Petersen":
         l, m, n = petersen(new_path)
+    elif graphtype == "temporal":
+        n = temporal(nodes, d, s, new_path)
+        return n
     else:
         l, m, n = custom(graphtype, new_path)
     return l, m, n
