@@ -205,47 +205,18 @@ def test():
         source_be = int(req["source"])
         destination_be = int(req["destination"])
         user_be = req["user"]
-        print(user_be)
+        # print(user_be)
 
-        # used to check if user is new or not
-        new_user = False
-
-        if user_be == '':
-            new_user = True
-            uuidone = uuid.uuid4()
-            string_unique = str(uuidone)
-            new_folder_path = os.path.join("static/graph_images/", string_unique)
-            os.makedirs(new_folder_path)
-            print(new_folder_path)
-            print("DIRECTORY for user '% s' CREATED" % string_unique)
-        else:
-            uuidone = user_be
-            string_unique = str(uuidone)
-            new_folder_path = os.path.join("static/graph_images/", string_unique)
-            shutil.rmtree(new_folder_path)
-            os.makedirs(new_folder_path)
+        uuidone = uuid.uuid4()
+        string_unique = str(uuidone)
+        new_folder_path = os.path.join("static/graph_images/", string_unique)
+        os.makedirs(new_folder_path)
+        print(new_folder_path)
+        print("DIRECTORY for user '% s' CREATED" % string_unique)
 
         # Deleting old images in file
 
         images_path = os.listdir(new_folder_path)
-        print(images_path)
-        for filename_old in images_path:
-            if fnmatch.fnmatch(filename_old, filename_old):
-                os.remove(os.path.join(new_folder_path + '/' + filename_old))
-                print('deleted')
-            elif fnmatch.fnmatch(filename_old, '*bfs.png'):
-                os.remove(new_folder_path + '/' + filename_old)
-                print('deleted')
-            elif fnmatch.fnmatch(filename_old, '*dfs.png'):
-                os.remove(new_folder_path + '/' + filename_old)
-                print('deleted')
-            elif fnmatch.fnmatch(filename_old, '*dijkstra.png'):
-                os.remove(new_folder_path + '/' + filename_old)
-                print('deleted')
-            elif fnmatch.fnmatch(filename_old, '*cycledetection.png'):
-                os.remove(new_folder_path + '/' + filename_old)
-                print('deleted')
-
         print(images_path)
 
         custom_string = req["type"] + str(nodes_be) + str(graph_be) + str(source_be) + str(
@@ -299,8 +270,7 @@ def test():
                         os.remove(new_folder_path + '/' + filename)
             exist_in_data = checkInputDetails(str(uuidone))
             if exist_in_data == [(False,)] and type(graph_be) != list:
-                new_uuidone = str(uuid.uuid4())
-                data = Data(id=new_uuidone, type=req["type"], nodes=req["nodes"], graph=req["graph"],
+                data = Data(id=uuidone, type=req["type"], nodes=req["nodes"], graph=req["graph"],
                             source=req["source"], destination=req["destination"], algorithm=req["algorithm"])
                 db.session.add(data)
                 db.session.commit()
