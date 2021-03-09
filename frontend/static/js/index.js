@@ -80,16 +80,19 @@ inputForm.addEventListener("submit", function (event) {
         return;
       }
     }
+    error_nodes.classList.remove("d-block");
     if (graph == "None") {
       error_graphs.classList.add("d-block");
       return;
     }
+    error_graphs.classList.remove("d-block");
     if (algorithms == "SP") {
       if (nodes == 1) {
         error_nodes.innerHTML = "Must be more than 1 for dijkstra's algorithm.";
         error_nodes.classList.add("d-block");
         return;
       }
+      error_nodes.classList.remove("d-block");
       if (isNaN(source) || source > nodes) {
         error_source.innerHTML =
           "Source node must be between 1 and " + nodes + ".";
@@ -115,6 +118,7 @@ inputForm.addEventListener("submit", function (event) {
         error_nodes.classList.add("d-block");
         return;
       }
+      error_nodes.classList.remove("d-block");
       if (isNaN(source) || source > nodes) {
         error_source.innerHTML =
           "Source node must be between 1 and " + nodes + ".";
@@ -127,12 +131,19 @@ inputForm.addEventListener("submit", function (event) {
         error_destination.classList.add("d-block");
         return;
       } else if (2 * parseInt(nodes) > destination || parseInt(destination) > 20) {
-        error_destination.innerHTML =
-          "Lifetime must be between " + String(2 * parseInt(nodes)) + " and 20.";
-        error_destination.classList.add("d-block");
+        if (nodes == '10') {
+          error_destination.innerHTML = "Lifetime must be 20.";
+        } else {
+          error_destination.innerHTML =
+            "Lifetime must be between " + String(2 * parseInt(nodes)) + " and 20.";
+          error_destination.classList.add("d-block");
+        }
         return;
       }
     }
+    error_nodes.classList.remove("d-block");
+    error_source.classList.remove("d-block");
+    error_destination.classList.remove("d-block");
     var obj = {
       type: type,
       nodes: nodes,
@@ -143,10 +154,6 @@ inputForm.addEventListener("submit", function (event) {
       user: specific_user
     };
     var myJSON = JSON.stringify(obj);
-    error_nodes.classList.remove("d-block");
-    error_graphs.classList.remove("d-block");
-    error_source.classList.remove("d-block");
-    error_destination.classList.remove("d-block");
     console.log(myJSON);
     fetch(`${window.origin}/test`, {
         method: "POST",
@@ -379,6 +386,7 @@ function changeAlgo() {
   }
 }
 
+
 // reset for description boxes
 function resetDesc() {
   graphDesc.innerHTML = graphDescDict["None"];
@@ -428,8 +436,8 @@ startCycle.addEventListener('click', function () {
       startCycle.innerHTML = pause;
     }, speed / 2);
   } else {
-    startCycle.innerHTML = play
     x = !x
+    startCycle.innerHTML = play
   }
 });
 
