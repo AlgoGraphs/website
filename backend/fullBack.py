@@ -729,7 +729,7 @@ def select_graph(graphtype, nodes, new_path, s, d):
         l, m, n = hypercube(nodes, new_path)
     elif graphtype == "Petersen":
         l, m, n = petersen(new_path)
-    elif graphtype == "temporal":
+    elif graphtype == "Temporal":
         n = temporal(nodes, d, s, new_path)
         return n
     else:
