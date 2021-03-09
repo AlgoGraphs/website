@@ -10,9 +10,12 @@ This website is made for software engineering module group project.
 * Bipartite
 * Hypercubes
 * Petersen
+* Temporal
+* Custom
 
 ## Algorithms
 * BFS
 * DFS
 * Dijkstra (Shortest path)
 * Cycle detection
+* Foremost Journey

@@ -1,8 +1,7 @@
-// form input and parsing
+// form input, parsing and sending request to backend
 var img = [];
 var numberOfImg = 0;
 var specific_user = "";
-var full_path = "";
 const inputForm = document.getElementById('userInputForm');
 inputForm.addEventListener("submit", function (event) {
   try {
@@ -168,7 +167,6 @@ inputForm.addEventListener("submit", function (event) {
           $(".collapse").collapse('show');
           console.log(data);
           return_images(data.images);
-          return_length(img.length);
           return_user(data.user_id);
           document.getElementById("imgSlideshow").src = path + img[0];
           changeCounter(1, numberOfImg);
@@ -178,6 +176,7 @@ inputForm.addEventListener("submit", function (event) {
     window.alert(error);
   }
 });
+
 
 // change other inputs selects depending on graph type toggle
 window.onload = function () {
@@ -225,7 +224,8 @@ window.onload = function () {
   });
 };
 
-// button control functions for increasing number of nodes nodes
+
+// button control functions for increasing number of nodes
 function upNodes(max) {
   if ('Hypercubes' == document.getElementById("graph").value) {
     if (document.getElementById("nodes").value > 3) {
@@ -251,7 +251,8 @@ function upNodes(max) {
   }
 }
 
-// button control functions for decreasing number of nodes nodes
+
+// button control functions for decreasing number of nodes
 function downNodes(min) {
   if ('Hypercubes' == document.getElementById("graph").value) {
     if (document.getElementById("nodes").value > 8) {
@@ -293,7 +294,6 @@ const graphDescDict = {
   Temporal: '<h5 class="card-title">Temporal Graph</h5><p class="card-text">A temporal graph is a graph that changes with time. When time is discrete and only the relationships between the participating entities may change and not the entities themselves, a temporal graph may be viewed as a sequence G<sub>1</sub>, G<sub>2</sub> . . . , G<sub>l</sub> of static graphs over the same (static) set of nodes V. The set V of vertices of the graph is fixed, but the set E of edges can change.</p><a href="https://www.google.com/search?q=Temporal+Graph" class="card-link" target="_blank rel="noreferrer noopener">Google</a>'
 };
 
-
 // function for changing graphs
 function changeGraph() {
   var graph = document.getElementById('graph').value;
@@ -332,8 +332,9 @@ function changeGraph() {
   }
 }
 
+
 const algoDescDict = {
-  None: '<h6 class="card-subtitle mb-2 text-muted text-center">Select an example algorithm to see description</h6>',
+  None: '<h6 class="card-subtitle mb-2 text-muted text-center">Choose an example algorithm to see description</h6>',
   BFS: '<h5 class="card-title">Breadth-first search</h5><p class="card-text">Breadth-first search is a graph traversal algorithm that starts traversing the graph from root node and explores all the neighbouring nodes. Then, it selects the nearest node and explores all the unexplored nodes. The algorithm follows the same process for each of the nearest nodes until it finds the goal.</p><a href="https://www.google.com/search?q=Breath+First+Search" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
   DFS: '<h5 class="card-title">Depth-first search</h5><p class="card-text">Depth-first search is a graph traversal algorithm that starts traversing the graph from the root node and explores as far as possible along each branch before backtracking. So the basic idea is to start from the root or any arbitrary node and mark the node and move to the adjacent unmarked node and continue this loop until there is no unmarked adjacent node. Then backtrack and check for other unmarked nodes and traverse them.</p><a href="https://www.google.com/search?q=Depth+First+Search" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
   SP: '<h5 class="card-title">Dijkstra\'s algorithm</h5><p class="card-text">Dijkstra\'s algorithm solves the problem of finding the shortest path from a point in a graph (the source) to a destination. The graph representing all the paths from one vertex to all the others must be a spanning tree - it must include all vertices. There will also be no cycles as a cycle would define more than one path from the selected vertex to at least one other vertex. The steps for implementing Dijkstra’s algorithm are as follows: <ol><li>Mark your selected initial node with a current distance of 0 and the rest with infinity.</li><li> Set the non-visited node with the smallest current distance as the current node C.</li><li> For each neighbour N of your current node C: add the current distance of C with the weight of the edge connecting C-N.</li><li> If it\'s smaller than the current distance of N, set it as the new current distance of N. Mark the current node C as visited.</li><li>If there are non-visited nodes, go to step 2.</li></ol></p><a href="https://www.google.com/search?q=Dijkstra+algorithm" class="card-link" target="_blank" rel="noreferrer noopener">Google</a>',
@@ -357,7 +358,7 @@ const algoAnsDict = {
   CD: "<i>G</i> = graph<br><i>v</i> = any vertex in <i>G</i><br><br><b>if</b> DFS(<i>G</i>, <i>v</i>) finds edge that points to ancestor of current vertex <b>then</b><ol><b>return</b> true</ol><br><button id='ansBtn' class='btn btn-outline-dark' onclick='toggle()'>Hide Answers</button>",
 };
 
-// Function for changing algorithms
+// function for changing algorithms
 function changeAlgo() {
   var algorithms = document.getElementById("algorithms").value;
   var algoDesc = document.getElementById("algoDesc");
@@ -378,21 +379,29 @@ function changeAlgo() {
   }
 }
 
-
-// Reset for description boxes
+// reset for description boxes
 function resetDesc() {
   graphDesc.innerHTML = graphDescDict["None"];
   document.getElementById('grid').innerHTML = "";
   algoDesc.innerHTML = algoDescDict["None"];
   document.getElementById("codeBtn").innerHTML = "Code";
+
+  if (!(document.getElementById("typeToggle").checked)) {
+    document.querySelector(
+      "#userInputForm > div:nth-child(1) > div.col-lg-2.col-sm-4.mb-2 > div > div > div > label.btn.btn-primary.toggle-off"
+    ).click();
+  }
+  document.getElementById("graph").disabled = false;
+  document.getElementById("source&dest").style.display = "none";
+  document.getElementById("lifetime").innerHTML = "Destination"
 }
 
-// SLideshow functions
+
+// slideshow functions
 var x = false
 var speed = 2000
-var path = ''; // "assets\\img\\slideshow\\""..\\..\\frontend\\graph_images\\"
-var imgNumber = 0; // ["Figure_1.png", "Figure_2.png","Figure_3.png","Figure_4.png"]
-//var numberOfImg = img.length;
+var path = '';
+var imgNumber = 0;
 const play = "<i class=\"fa fa-play\" aria-hidden=\"true\"></i>"
 const pause = "<i class=\"fa fa-pause\" aria-hidden=\"true\"></i>"
 const startCycle = document.getElementById('startCycle');
@@ -429,14 +438,9 @@ function return_images(image_list) {
   numberOfImg = img.length;
 }
 
-function return_length(image_array) {
-  numberOfImg = img.length;
-}
-
 function return_user(user_id) {
   specific_user = user_id;
-  full_path = "graph_images/" + specific_user + "/";
-  path = full_path;
+  path = "graph_images/" + specific_user + "/";
 }
 
 function slide() {
@@ -483,7 +487,7 @@ function changeCounter(cur, total) {
 }
 document.getElementById("counter").innerHTML = 1 + "/" + numberOfImg;
 
-//Custom input functions
+// custom input functions
 function showGrid() {
   document.getElementById("form-container*2").style.display = "block";
 }
