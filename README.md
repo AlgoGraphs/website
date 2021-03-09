@@ -1,4 +1,5 @@
-# [AlgoGraphs](https://algographs.herokuapp.com) (Algorithms and graphs website)
+# [AlgoGraphs](https://algographs.herokuapp.com)
+Educational tool for algorithms and graphs.
 This website is made for software engineering module group project.
 
 ## Graphs
