@@ -141,6 +141,7 @@ inputForm.addEventListener("submit", function (event) {
       source: source,
       destination: destination,
       algorithm: algorithms,
+      user: specific_user
     };
     var myJSON = JSON.stringify(obj);
     error_nodes.classList.remove("d-block");
@@ -425,6 +426,7 @@ startCycle.addEventListener('click', function () {
 
 function return_images(image_list) {
   img = image_list;
+  numberOfImg = img.length;
 }
 
 function return_length(image_array) {
