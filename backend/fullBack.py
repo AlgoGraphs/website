@@ -104,29 +104,52 @@ def star(numNodes, exact_path):
 
 
 def tree(numNodes, exact_path):
-    plt.clf()
-    G = nx.Graph()
-    if numNodes == 1:
-        G.add_node(0)
-    elif numNodes > 1:
-        G.add_node(0)
-        for i in range(1, numNodes):
-            G.add_node(i)
-            prob = random.uniform(0, 1)
-            if prob > 0.7:
-                randy = random.randint(0, i - 1)
-                G.add_edge(randy, i)
-            else:
-                G.add_edge(i, i - 1)
+    for trying in range(10):
+        plt.clf()
+        G = nx.Graph()
+        if numNodes == 1:
+            G.add_node(0)
+            break
+        elif numNodes > 1:
+            G.add_node(0)
+            for i in range(1, numNodes):
+                G.add_node(i)
+                prob = random.uniform(0, 1)
+                print(prob)
+                if prob > 0.5:
+                    randy = random.randint(0, i - 1)
+                    G.add_edge(randy, i)
+                else:
+                    G.add_edge(i, i - 1)
+        if numNodes <= 3:
+            break
+        no3 = False
+        save2 = []
+        deg3 = []
+        ones = []
+        for i in G.nodes():  # range(0,numNodes):
+            x = [n for n in G.neighbors(i)]
+            print(x, 'nodes', i)
+            if len(x) == 3:
+                no3 = True
+                deg3.append(i)
+                break
+            if len(x) == 2:
+                save2.append(i)
+            if len(x) == 1:
+                ones.append(i)
+        if no3 == True:
+            break
 
+    print(G.edges())
     G.add_nodes_from(G.nodes(), colour='never coloured')
     positions = nx.spring_layout(G)
     nx.draw(G, pos=positions, node_color='white')
     nx.draw_networkx_labels(G, pos=positions, labels={n: n + 1 for n in G})
     plt.savefig(os.path.join(exact_path, (str(numNodes) + "tree")), dpi=300)
     adjlist = []
-    x = nx.convert.to_dict_of_lists(G)
-    for i in x.values():
+    xx = nx.convert.to_dict_of_lists(G)
+    for i in xx.values():
         adjlist.append(i)
     return adjlist, G, positions
 
@@ -525,8 +548,80 @@ def dijkstra(adjlist, graph, positions, source, target, direc):
             nx.draw_networkx_labels(graph, pos=positions)
         plt.savefig(os.path.join(direc, (str(order) + "dijkstra.png")), dpi=300)
 
+def temporal_noalg(num, max_life, src, direc):
+    print(num, max_life, src)
+    src = src - 1
+    ##    if num <1 or num>10:
+    ##        print("please ennter number of nodes between 1 and 10")
+    ##        exit()
+
+    vertices = []
+    for i in range(num):
+        vertices.append(i)
+    print("vertices", vertices)
+
+    check = src - 1
+
+    ##    if check not in vertices:
+    ##        print("please ennter a source vertex between 1 and your max no. of nodes")
+    ##        exit()
+    ##
+    ##    if max_life < (2*num):
+    ##        print("please enter max_life which is atleast twice the number of nodes")
+    ##        exit()
+    ##
+    ##    if max_life > 20:
+    ##        print("please enter max_life which is atleast twice the number of nodes and not more than 2")
+    ##        exit()
+
+    edges_not_used = list(combinations((vertices), 2))  # getting all possible combinations of length 2
+    print("combinations possible", edges_not_used)
+    plt.clf()  # used to clear the current figure
+    G = nx.Graph()
+    order = 0
+
+    for i in range(0, num):
+        G.add_node(i)
+
+    G.add_nodes_from(G.nodes(), colour='never coloured')
+    positions = nx.spring_layout(G, scale=0.2)
+    nx.draw(G, pos=positions, node_color='white')
+    nx.draw_networkx_labels(G, pos=positions, labels={n: n + 1 for n in G})
+    plt.savefig(os.path.join(direc, (str(order) + "temporal.png")), dpi=300)
+    order += 1
+
+    main = []
+
+    for j in range(0, max_life, src + 1):
+        lst1 = []
+        G.remove_edges_from(list(G.edges()))
+        for k in range(0, num):
+            for q in range(0, num):
+                probability = random.uniform(0, 1)
+                if (k != q):  # edges created with random probability
+                    if (probability < (1 / (num))):  # create random edges at diff times
+
+                        if ((k, q) in edges_not_used) or ((q, k) in edges_not_used):
+                            if j == 0:
+                                k = src
+                            vertices_traversed = (k, q)
+                            lst1.append(vertices_traversed)
+                            G.add_edge(k, q)
+                            if (k, q) in edges_not_used:
+                                edges_not_used.remove((k, q))
+                            if (q, k) in edges_not_used:
+                                edges_not_used.remove((q, k))
+
+        plt.clf()
+        main.append(lst1)
+        nx.draw(G, pos=positions, node_color='pink')
+        nx.draw_networkx_labels(G, pos=positions, labels={n: n + 1 for n in G})
+        plt.savefig(os.path.join(direc, (str(order) + "temporal.png")), dpi=300)
+        order += 1
+
 
 def temporal(num, max_life, src, direc):
+    print(num, max_life, src)
     src = src - 1
     ##    if num <1 or num>10:
     ##        print("please ennter number of nodes between 1 and 10")
@@ -712,7 +807,7 @@ def temporal(num, max_life, src, direc):
     return G.edges
 
 
-def select_graph(graphtype, nodes, new_path, s, d):
+def select_graph(algorithm, graphtype, nodes, new_path, s, d):
     if graphtype == "Cycle":
         l, m, n = cycle(nodes, new_path)
     elif graphtype == "Star":
@@ -730,7 +825,9 @@ def select_graph(graphtype, nodes, new_path, s, d):
     elif graphtype == "Petersen":
         l, m, n = petersen(new_path)
     elif graphtype == "Temporal":
-        n = temporal(nodes, d, s, new_path)
+        n = temporal_noalg(nodes, nodes*2, s, new_path)
+    elif algorithm == "FJ":
+        n = temporal(nodes, nodes*2, s, new_path)
         return n
     else:
         l, m, n = custom(graphtype, new_path)

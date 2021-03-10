@@ -225,8 +225,10 @@ def test():
 
         else:
 
-            if algorithm_be == 'None' or algorithm_be == 'Temporal':
-                fullBack.select_graph(graph_be, nodes_be, new_folder_path, source_be, destination_be)
+            if algorithm_be == 'None' or graph_be == 'Temporal':
+                fullBack.select_graph(algorithm_be, graph_be, nodes_be, new_folder_path, source_be, destination_be)
+            elif algorithm_be == 'NJ':
+                fullBack.select_graph(algorithm_be, graph_be, nodes_be, new_folder_path, source_be, destination_be)
             else:
                 n: int
                 l, m, n = fullBack.select_graph(graph_be, nodes_be, new_folder_path, source_be, destination_be)
