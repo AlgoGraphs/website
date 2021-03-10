@@ -826,6 +826,7 @@ def select_graph(algorithm, graphtype, nodes, new_path, s, d):
         l, m, n = petersen(new_path)
     elif graphtype == "Temporal":
         n = temporal_noalg(nodes, nodes*2, s, new_path)
+        return n
     elif algorithm == "FJ":
         n = temporal(nodes, nodes*2, s, new_path)
         return n
