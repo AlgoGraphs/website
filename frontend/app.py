@@ -231,7 +231,7 @@ def test():
                 fullBack.select_graph(algorithm_be, graph_be, nodes_be, new_folder_path, source_be, destination_be)
             else:
                 n: int
-                l, m, n = fullBack.select_graph(graph_be, nodes_be, new_folder_path, source_be, destination_be)
+                l, m, n = fullBack.select_graph(algorithm_be, graph_be, nodes_be, new_folder_path, source_be, destination_be)
                 fullBack.select_alg(algorithm_be, l, m, n, new_folder_path, source_be, destination_be)
 
         if len(os.listdir(new_folder_path)) == 0:
