@@ -23,6 +23,7 @@ inputForm.addEventListener("submit", function (event) {
     var error_graphs = document.getElementById("error-graphs");
     var error_source = document.getElementById("error-source");
     var error_destination = document.getElementById("error-destination");
+    var error_server = document.getElementById("error-server");
 
     if (graph == "Custom") {
       var matrix = [];
@@ -65,8 +66,10 @@ inputForm.addEventListener("submit", function (event) {
     if (isNaN(nodes)) {
       if (graph == "Hypercubes") {
         error_nodes.innerHTML = "Must be 1, 2 ,4 or 8 nodes.";
+      } else if (graph == "Cycle") {
+        error_nodes.innerHTML = "Must be between 3 to 10 nodes.";
       } else {
-        error_nodes.innerHTML = "Must be between 1 to 10 nodes";
+        error_nodes.innerHTML = "Must be between 1 to 10 nodes.";
       }
       error_nodes.classList.add("d-block");
       return;
@@ -75,7 +78,11 @@ inputForm.addEventListener("submit", function (event) {
         graph == "Hypercubes" &&
         !(nodes == "1" || nodes == "2" || nodes == "4" || nodes == "8")
       ) {
-        error_nodes.innerHTML = "Must be 1, 2 ,4 or 8 nodes";
+        error_nodes.innerHTML = "Must be 1, 2 ,4 or 8 nodes.";
+        error_nodes.classList.add("d-block");
+        return;
+      } else if (graph == "Cycle" && parseInt(nodes) < 3) {
+        error_nodes.innerHTML = "Must be between 3 to 10 nodes.";
         error_nodes.classList.add("d-block");
         return;
       }
@@ -154,6 +161,7 @@ inputForm.addEventListener("submit", function (event) {
       user: specific_user
     };
     var myJSON = JSON.stringify(obj);
+    document.getElementById("compileBtn").innerHTML = "<i class=\"fa fa-spinner fa-spin\"></i>Loading"
     console.log(myJSON);
     fetch(`${window.origin}/test`, {
         method: "POST",
@@ -165,18 +173,22 @@ inputForm.addEventListener("submit", function (event) {
         })
       })
       .then(function (response) {
+        document.getElementById("compileBtn").innerHTML = "Compile"
         if (response.status !== 200) {
+          error_server.classList.add("d-block");
+          error_server.innerHTML = "Error" + response.status;
           console.log(`Response status was not 200: ${response.status}`);
           return;
         }
-
         response.json().then(function (data) {
-          $(".collapse").collapse('show');
+          $("#slideshow").collapse('show');
+          error_server.classList.remove("d-block");
           console.log(data);
           return_images(data.images);
           return_user(data.user_id);
           document.getElementById("imgSlideshow").src = path + img[0];
           changeCounter(1, numberOfImg);
+          imgNumber = 0;
         })
       })
   } catch (error) {
@@ -212,6 +224,7 @@ window.onload = function () {
     for (i = 2; i < algSelect.length; i++) {
       algSelect[i].style.display = "none";
     }
+    document.getElementById('grid').innerHTML = "";
   });
   dynamicBtn.addEventListener("click", function () {
     // Modify and enable graph dropdown and description
@@ -305,29 +318,32 @@ const graphDescDict = {
 function changeGraph() {
   var graph = document.getElementById('graph').value;
   var graphDesc = document.getElementById('graphDesc');
+  var currentNodes = document.getElementById("nodes").value;
+  if (currentNodes > 10) {
+    document.getElementById("nodes").value = 10;
+  }
   if (graph == "Petersen") {
-    document.getElementById("nodes").value = "10";
+    document.getElementById("nodes").value = 10;
     document.getElementById("up").disabled = true;
     document.getElementById("down").disabled = true;
     document.getElementById("nodes").disabled = true;
-  } else if (graph == "Hypercubes") {
-    if (document.getElementById("nodes").value > 7) {
-      document.getElementById("nodes").value = 8
-    } else if (document.getElementById("nodes").value > 3) {
-      document.getElementById("nodes").value = 4
-    } else {
-      document.getElementById("nodes").value = 1
-    }
-    document.getElementById("up").disabled = false;
-    document.getElementById("down").disabled = false;
-    document.getElementById("nodes").disabled = false;
   } else {
-    if (document.getElementById("nodes").value >= 10) {
-      document.getElementById("nodes").value = 10;
-    }
     document.getElementById("up").disabled = false;
     document.getElementById("down").disabled = false;
     document.getElementById("nodes").disabled = false;
+    if (graph == "Hypercubes") {
+      if (currentNodes > 7) {
+        document.getElementById("nodes").value = 8
+      } else if (currentNodes > 3) {
+        document.getElementById("nodes").value = 4
+      } else {
+        document.getElementById("nodes").value = 1
+      }
+    } else if (graph == "Cycle") {
+      if (currentNodes < 3) {
+        document.getElementById("nodes").value = 3
+      }
+    }
   }
   if (graph == "Custom") {
     graphDesc.innerHTML = "Select Edges ";

@@ -8,19 +8,8 @@ import matplotlib.pyplot as plt
 import random
 import os
 
-# note for mitchell
-# for capturing the order of the images (and the right number), may
-# need to return the order (in search algs) to
-# ensure the right amount of images are collected
-
-# ask jacob
-# hypercube n currently dimension, ask jacob how he is doing in front end, may need to send down the sq rooted version
-# or change the for loops from 2**n to n
-
-# hypercube 4 is still an option 16
 """
-all these added below
-
+Graphs
 1. cycle
 2. star
 3. tree
@@ -30,17 +19,14 @@ all these added below
 7. hypercubes
 8. petersen
 9. custom
+10. Temporal
 
+Algorithms
 1. bfs
 2. dfs
 3. dijkstra
 4. cycle det
-
-
-need adding/doing: temporal
-
-!!!!!!!!!!temporal!!!!!!!!!
-
+5. foremost journey
 """
 
 my_path = os.path.abspath(__file__)
@@ -551,9 +537,6 @@ def dijkstra(adjlist, graph, positions, source, target, direc):
 def temporal_noalg(num, max_life, src, direc):
     print(num, max_life, src)
     src = src - 1
-    ##    if num <1 or num>10:
-    ##        print("please ennter number of nodes between 1 and 10")
-    ##        exit()
 
     vertices = []
     for i in range(num):
@@ -561,18 +544,6 @@ def temporal_noalg(num, max_life, src, direc):
     print("vertices", vertices)
 
     check = src - 1
-
-    ##    if check not in vertices:
-    ##        print("please ennter a source vertex between 1 and your max no. of nodes")
-    ##        exit()
-    ##
-    ##    if max_life < (2*num):
-    ##        print("please enter max_life which is atleast twice the number of nodes")
-    ##        exit()
-    ##
-    ##    if max_life > 20:
-    ##        print("please enter max_life which is atleast twice the number of nodes and not more than 2")
-    ##        exit()
 
     edges_not_used = list(combinations((vertices), 2))  # getting all possible combinations of length 2
     print("combinations possible", edges_not_used)
