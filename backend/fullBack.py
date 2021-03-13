@@ -534,6 +534,7 @@ def dijkstra(adjlist, graph, positions, source, target, direc):
             nx.draw_networkx_labels(graph, pos=positions)
         plt.savefig(os.path.join(direc, (str(order) + "dijkstra.png")), dpi=300)
 
+
 def temporal_noalg(num, max_life, src, direc):
     print(num, max_life, src)
     src = src - 1
