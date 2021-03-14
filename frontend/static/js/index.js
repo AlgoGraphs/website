@@ -100,13 +100,13 @@ inputForm.addEventListener("submit", function (event) {
         return;
       }
       error_nodes.classList.remove("d-block");
-      if (isNaN(source) || source > nodes) {
+      if (isNaN(source) || parseInt(source) > parseInt(nodes) || parseInt(source) < 1) {
         error_source.innerHTML =
           "Source node must be between 1 and " + nodes + ".";
         error_source.classList.add("d-block");
         return;
       }
-      if (isNaN(destination) || destination > nodes) {
+      if (isNaN(destination) || parseInt(destination) > parseInt(nodes) || parseInt(destination) < 1) {
         error_destination.innerHTML =
           "Destination node must be between 1 and " + nodes + ".";
         error_destination.classList.add("d-block");
@@ -176,8 +176,8 @@ inputForm.addEventListener("submit", function (event) {
         document.getElementById("compileBtn").innerHTML = "Compile"
         if (response.status !== 200) {
           error_server.classList.add("d-block");
-          error_server.innerHTML = "Error" + response.status;
-          console.log(`Response status was not 200: ${response.status}`);
+          error_server.innerHTML = "Error: " + response.status;
+          console.log(`Error: ${response.status}`);
           return;
         }
         response.json().then(function (data) {
