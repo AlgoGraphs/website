@@ -534,7 +534,6 @@ def dijkstra(adjlist, graph, positions, source, target, direc):
             nx.draw_networkx_labels(graph, pos=positions)
         plt.savefig(os.path.join(direc, (str(order) + "dijkstra.png")), dpi=300)
 
-
 def temporal_noalg(num, max_life, src, direc):
     print(num, max_life, src)
     src = src - 1
@@ -593,33 +592,13 @@ def temporal_noalg(num, max_life, src, direc):
 
 
 def temporal(num, max_life, src, direc):
-    print(num, max_life, src)
     src = src - 1
-    ##    if num <1 or num>10:
-    ##        print("please ennter number of nodes between 1 and 10")
-    ##        exit()
 
     vertices = []
     for i in range(num):
         vertices.append(i)
-    print("vertices", vertices)
 
-    check = src - 1
-
-    ##    if check not in vertices:
-    ##        print("please ennter a source vertex between 1 and your max no. of nodes")
-    ##        exit()
-    ##
-    ##    if max_life < (2*num):
-    ##        print("please enter max_life which is atleast twice the number of nodes")
-    ##        exit()
-    ##
-    ##    if max_life > 20:
-    ##        print("please enter max_life which is atleast twice the number of nodes and not more than 2")
-    ##        exit()
-
-    edges_not_used = list(combinations((vertices), 2))  # getting all possible combinations of length 2
-    print("combinations possible", edges_not_used)
+    edges_not_used = list(combinations(vertices, 2))  # getting all possible combinations of length 2
     plt.clf()  # used to clear the current figure
     G = nx.Graph()
     order = 0
@@ -642,8 +621,8 @@ def temporal(num, max_life, src, direc):
         for k in range(0, num):
             for q in range(0, num):
                 probability = random.uniform(0, 1)
-                if (k != q):  # edges created with random probability
-                    if (probability < (1 / (num))):  # create random edges at diff times
+                if k != q:  # edges created with random probability
+                    if probability < (1 / num):  # create random edges at diff times
 
                         if ((k, q) in edges_not_used) or ((q, k) in edges_not_used):
                             if j == 0:
@@ -658,7 +637,7 @@ def temporal(num, max_life, src, direc):
 
         plt.clf()
         main.append(lst1)
-        nx.draw(G, pos=positions, node_color='pink')
+        nx.draw(G, pos=positions, node_color='white')
         nx.draw_networkx_labels(G, pos=positions, labels={n: n + 1 for n in G})
         plt.savefig(os.path.join(direc, (str(order) + "temporal.png")), dpi=300)
         order += 1
@@ -677,7 +656,6 @@ def temporal(num, max_life, src, direc):
             new.append(swap)
         S.append(new)
 
-    print("S", S)
     null = '-'
 
     vertices_traversed = [src]
@@ -701,54 +679,41 @@ def temporal(num, max_life, src, direc):
                 arrival_time[each[1]] = i + 1
                 parents[each[1]] = null
 
-    print("arrival_time", arrival_time)
-    print("parents", parents)
-
     # dst here is the vertex that appears latest
     dst = vertices_traversed[-1]
 
     R = [src]
 
-    print("R", R)
-    print("dst", dst)
-
     for l in range(len(S)):
         for each in S[l]:
             a = each[0]
             b = each[1]
-            if (a in R and b not in R):  # main algorithm of foremost jounrey
+            if a in R and b not in R:  # main algorithm of foremost jounrey
                 if arrival_time[a] < l + 1:
                     parents[b] = a
                     arrival_time[b] = l + 1
                     R.append(b)
-            elif (b in R and a not in R):  # i have also taking reverse since our graph is undirected
+            elif b in R and a not in R:  # i have also taking reverse since our graph is undirected
                 if arrival_time[b] < l + 1:
                     parents[a] = b
                     arrival_time[a] = l + 1
                     R.append(a)
 
-    print("arrival_time", arrival_time)
-    print("parents", parents)
-    print("R222", R)
-
     traverse = []  # to add all edges in the order they will be traversed
     for i in range(max_life):
         for each in arrival_time:
-            if (arrival_time[each] == i):
+            if arrival_time[each] == i:
                 lst2 = (parents[each], each)
                 traverse.append(lst2)
 
     del traverse[0]
-    print("traverse", traverse)
 
     final = 0  # to calculage total time taken
     if len(R) != len(vertices):
-        print("Path not found, you can try again by increasing max_life")
         exit()
 
     for i in vertices:
         final += arrival_time[i]
-    print("final", final)
 
     G.remove_edges_from(list(G.edges()))  # to label edges with time at which they appear
     for each in traverse:
@@ -758,7 +723,6 @@ def temporal(num, max_life, src, direc):
     labels = {}  # to label nodes, source node also labelled
     for n in G.nodes:
 
-        print(n)
         if n == src:
             labels[n] = str(n + 1) + '$: SOURCE$'
 
@@ -767,14 +731,15 @@ def temporal(num, max_life, src, direc):
 
     plt.clf()  # Plotting edges from the list traversed
     main.append(lst1)
-    nx.draw(G, pos=positions, node_color='pink')
+    nx.draw(G, pos=positions, node_color='white')
     nx.draw_networkx_labels(G, pos=positions, labels=labels)
 
     b = dict(((u, v), d) for u, v, d in G.edges(data=True))
-    print(b)
     nx.draw_networkx_edge_labels(G, pos=positions, edge_labels=b, font_color='red')
-
+    #final = str(max_life + 1)
+    #name_of_final = final + "temporal.png"
     plt.savefig(os.path.join(direc, (str(order) + "temporal.png")), dpi=300)
+    #plt.savefig((name_of_final), dpi=250)
 
     return G.edges
 
@@ -796,11 +761,11 @@ def select_graph(algorithm, graphtype, nodes, new_path, s, d):
         l, m, n = hypercube(nodes, new_path)
     elif graphtype == "Petersen":
         l, m, n = petersen(new_path)
-    elif graphtype == "Temporal":
+    elif graphtype == "Temporal" and algorithm == "None":
         n = temporal_noalg(nodes, nodes*2, s, new_path)
         return n
-    elif algorithm == "FJ":
-        n = temporal(nodes, nodes*2, s, new_path)
+    elif graphtype == "Temporal" and algorithm == "FJ":
+        n = temporal(nodes, d, s, new_path)
         return n
     else:
         l, m, n = custom(graphtype, new_path)
