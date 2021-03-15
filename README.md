@@ -1,8 +1,8 @@
 # [AlgoGraphs](https://algographs.herokuapp.com)
 Educational tool for algorithms and graphs.
 This website is made for software engineering module group project.
-
-## Graphs
+# Currrent features
+### Graphs
 * Cycle
 * Star
 * Tree
@@ -14,7 +14,7 @@ This website is made for software engineering module group project.
 * Temporal
 * Custom
 
-## Algorithms
+### Algorithms
 * BFS
 * DFS
 * Dijkstra (Shortest path)
