@@ -23,3 +23,5 @@ This website is made for software engineering module group project.
 
 # References
 [Bootstrap template (Agency)](https://startbootstrap.com/theme/agency)
+[Banner Image](https://towardsdatascience.com/graph-theory-history-overview-f89a3efc0478)
+[Font Awesome Icons](https://fontawesome.com/v4.7.0/icons)
