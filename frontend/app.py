@@ -58,7 +58,9 @@ def write_blob(part_id, path_to_file):
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
+
 # Check if ID exist in data database
+
 
 def checkInputDetails_Data(ID):
     global connection
@@ -231,7 +233,8 @@ def test():
                 fullBack.select_graph(algorithm_be, graph_be, nodes_be, new_folder_path, source_be, destination_be)
             else:
                 n: int
-                l, m, n = fullBack.select_graph(algorithm_be, graph_be, nodes_be, new_folder_path, source_be, destination_be)
+                l, m, n = fullBack.select_graph(algorithm_be, graph_be, nodes_be, new_folder_path, source_be,
+                                                destination_be)
                 fullBack.select_alg(algorithm_be, l, m, n, new_folder_path, source_be, destination_be)
 
         if len(os.listdir(new_folder_path)) == 0:
@@ -258,13 +261,15 @@ def test():
                         os.remove(new_folder_path + '/' + filename)
                     elif fnmatch.fnmatch(filename, '*custom.png'):
                         os.remove(new_folder_path + '/' + filename)
-            exist_in_data = checkInputDetails(str(uuidone))
+            exist_in_data = checkInputDetails_Data(str(uuidone))
             if exist_in_data == [(False,)] and type(graph_be) != list:
                 data = Data(id=uuidone, type=req["type"], nodes=req["nodes"], graph=req["graph"],
                             source=req["source"], destination=req["destination"], algorithm=req["algorithm"])
                 db.session.add(data)
                 db.session.commit()
             new_image_path = natsorted(os.listdir(new_folder_path))
+            if req["type"] == "DG":
+                del new_image_path[0]
             print(new_folder_path)
             print(new_image_path)
             n = 0
