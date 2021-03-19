@@ -86,6 +86,11 @@ inputForm.addEventListener("submit", function (event) {
         error_nodes.classList.add("d-block");
         return;
       }
+      else if (parseInt(nodes) < 1 || parseInt(nodes) > 10) {
+        error_nodes.innerHTML = "Must be between 1 to 10 nodes.";
+        error_nodes.classList.add("d-block");
+        return;
+      }
     }
     error_nodes.classList.remove("d-block");
     if (graph == "None") {
